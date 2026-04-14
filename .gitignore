@@ -49,3 +49,6 @@ secrets.*
 Thumbs.db
 desktop.ini
 연구노트/
+
+# Local scripts
+scripts/release.bat
