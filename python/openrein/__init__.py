@@ -51,8 +51,13 @@ from ._openrein import (  # noqa: F401
     SubAgent,
     Compact,
     default_tools,
-    __version__,
 )
+
+try:
+    from importlib.metadata import version
+    __version__ = version("openrein")
+except Exception:
+    from ._openrein import __version__  # fallback
 
 
 class ToolBase:
