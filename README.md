@@ -211,8 +211,9 @@ pip install -e .
 **Step 3 — Set your API key:**
 
 ```bash
-export GLM_API_KEY=<your-key>   # Linux / macOS
-set GLM_API_KEY=<your-key>      # Windows
+export GLM_API_KEY=<your-key>        # Linux / macOS
+set GLM_API_KEY=<your-key>           # Windows CMD
+$env:GLM_API_KEY = "<your-key>"      # Windows PowerShell
 ```
 
 ### Run

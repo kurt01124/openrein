@@ -9,6 +9,13 @@ _client: OpenAI | None = None
 def _get_client() -> OpenAI:
     global _client
     if _client is None:
+        if not config.GLM_API_KEY:
+            raise RuntimeError(
+                "GLM_API_KEY is not set.\n"
+                "  CMD:        set GLM_API_KEY=<your-key>\n"
+                "  PowerShell: $env:GLM_API_KEY = \"<your-key>\"\n"
+                "  Linux/macOS: export GLM_API_KEY=<your-key>"
+            )
         _client = OpenAI(
             api_key=config.GLM_API_KEY,
             base_url=config.GLM_BASE_URL,
