@@ -117,7 +117,7 @@ class Agent:
         prev   = self.session_mgr.load(self.cwd, self.session_id)
         engine = self._make_engine(prev)
 
-        print(f"\ncortex-code v0.1  (exit: exit | new session: /new)\n")
+        print(f"\nrein-code v0.1  (exit: exit | new session: /new)\n")
 
         while True:
             try:

@@ -180,14 +180,14 @@ Or use the convenience method on Engine:
 engine.maybe_compact(my_model_fn, threshold=80000)
 ```
 
-## Example: cortex-code
+## Example: rein-code
 
-`example/` contains **cortex-code**, a Claude Code-style AI coding agent CLI built on openrein.  
+`example/` contains **rein-code**, a Claude Code-style AI coding agent CLI built on openrein.  
 It uses GLM (ZhipuAI) as the model backend via an OpenAI-compatible API.
 
 ### Setup
 
-cortex-code depends on openrein, which must be built and installed first.
+rein-code depends on openrein, which must be built and installed first.
 
 **Step 1 — Build and install openrein:**
 
@@ -201,7 +201,7 @@ pip install dist/openrein-*.whl
 pip install dist/openrein-*.whl
 ```
 
-**Step 2 — Install cortex-code:**
+**Step 2 — Install rein-code:**
 
 ```bash
 cd example
@@ -219,13 +219,13 @@ set GLM_API_KEY=<your-key>      # Windows
 
 **Interactive mode (REPL):**
 ```bash
-cortex-code
+rein-code
 ```
 
 **Single task:**
 ```bash
-cortex-code "Refactor the auth module to use JWT"
-cortex-code "Write tests for utils.py"
+rein-code "Refactor the auth module to use JWT"
+rein-code "Write tests for utils.py"
 ```
 
 **Options:**
@@ -241,12 +241,12 @@ cortex-code "Write tests for utils.py"
 | Environment variable | Default | Description |
 |----------------------|---------|-------------|
 | `GLM_API_KEY` | — | ZhipuAI API key (required) |
-| `CORTEX_MAIN_MODEL` | `glm-5-turbo` | Main agent model |
-| `CORTEX_SUB_MODEL` | `glm-4.5-air` | Sub-agent model |
+| `REIN_MAIN_MODEL` | `glm-5-turbo` | Main agent model |
+| `REIN_SUB_MODEL` | `glm-4.5-air` | Sub-agent model |
 
 ---
 
-> **Legal notice — cortex-code example**
+> **Legal notice — rein-code example**
 >
 > The system prompt used in `example/` is derived from prompts that have been publicly
 > disclosed and widely circulated. It is included here **solely for educational and

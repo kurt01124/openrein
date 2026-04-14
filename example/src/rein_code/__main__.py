@@ -1,4 +1,4 @@
-"""Support for python -m cortex_code."""
+"""Support for python -m rein_code."""
 from .cli import main
 
 if __name__ == "__main__":

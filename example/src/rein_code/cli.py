@@ -8,7 +8,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
 
     parser = argparse.ArgumentParser(
-        prog="cortex-code",
+        prog="rein-code",
         description="Claude Code-style AI coding agent",
     )
     parser.add_argument("task", nargs="?", help="Task to run (omit for interactive mode)")
