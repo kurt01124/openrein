@@ -220,12 +220,16 @@ set GLM_API_KEY=<your-key>      # Windows
 **Interactive mode (REPL):**
 ```bash
 rein-code
+# or if rein-code is not on PATH:
+python -m rein_code
 ```
 
 **Single task:**
 ```bash
 rein-code "Refactor the auth module to use JWT"
 rein-code "Write tests for utils.py"
+# or if rein-code is not on PATH:
+python -m rein_code "Refactor the auth module to use JWT"
 ```
 
 **Options:**
