@@ -28,36 +28,24 @@ Skill usage:
     engine.skill_add("/path/to/skills/")   # directory or single .md file
     engine.add("system", engine.skill_prompt_listing())
     engine.skill_inject("commit")          # inject skill prompt as user message
-"""
 
-"""
-openrein — Minimal harness engine for building LLM agent apps.
-
-Writing a contrib tool:
-
-    import openrein
-
+Custom tool (ToolBase):
     class MyTool(openrein.ToolBase):
-        def name(self) -> str:
-            return "MyTool"
-        def description(self) -> str:
-            return "..."
-        def input_schema(self) -> dict:
-            return {"type": "object", "properties": {}}
-        def call(self, input: dict) -> str:
-            return "result"
+        def name(self) -> str: return "MyTool"
+        def description(self) -> str: return "..."
+        def input_schema(self) -> dict: return {"type": "object", "properties": {}}
+        def call(self, input: dict) -> str: return "result"
 
     engine = openrein.Engine()
     engine.register_tool(MyTool())
 """
 
-from __future__ import annotations
-
-import os
-from dataclasses import dataclass
 from pkgutil import extend_path
 
 __path__ = extend_path(__path__, __name__)
+
+import os
+from dataclasses import dataclass
 
 from ._openrein import (  # noqa: F401
     Engine as _Engine,
