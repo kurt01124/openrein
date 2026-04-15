@@ -23,6 +23,11 @@ Quick start:
             break
 
     print(engine.last_answer)
+
+Skill usage:
+    engine.skill_add("/path/to/skills/")   # directory or single .md file
+    engine.add("system", engine.skill_prompt_listing())
+    engine.skill_inject("commit")          # inject skill prompt as user message
 """
 
 """
@@ -46,6 +51,11 @@ Writing a contrib tool:
     engine.register_tool(MyTool())
 """
 
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+
 from ._openrein import (  # noqa: F401
     Engine as _Engine,
     SubAgent,
@@ -58,6 +68,88 @@ try:
     __version__ = version("openrein")
 except Exception:
     from ._openrein import __version__  # fallback
+
+
+@dataclass
+class Skill:
+    """A single skill loaded from a Markdown file.
+
+    Attributes:
+        name:          Skill name (filename without .md extension).
+        description:   Short description (from frontmatter ``description`` key).
+        when_to_use:   Hint for the LLM on when to trigger this skill.
+        allowed_tools: Optional list of tool names this skill may use.
+        prompt:        The skill body (everything after the frontmatter).
+        source_path:   Absolute path to the source .md file.
+    """
+    name: str
+    description: str
+    when_to_use: str
+    allowed_tools: list[str]
+    prompt: str
+    source_path: str
+
+
+def _parse_skill(path: str) -> Skill:
+    """Parse a single Skill Markdown file.
+
+    Frontmatter is delimited by ``---`` lines.  No external YAML library
+    required — we parse only the four known keys manually.
+    """
+    with open(path, encoding="utf-8") as fh:
+        raw = fh.read()
+
+    name = os.path.splitext(os.path.basename(path))[0]
+    frontmatter: dict[str, str] = {}
+    body = raw
+
+    lines = raw.split("\n")
+    if lines and lines[0].strip() == "---":
+        end = -1
+        for i in range(1, len(lines)):
+            if lines[i].strip() == "---":
+                end = i
+                break
+        if end != -1:
+            fm_lines = lines[1:end]
+            body = "\n".join(lines[end + 1:]).lstrip("\n")
+            for fm_line in fm_lines:
+                if ":" in fm_line:
+                    key, _, val = fm_line.partition(":")
+                    frontmatter[key.strip()] = val.strip()
+
+    description  = frontmatter.get("description", "")
+    when_to_use  = frontmatter.get("when_to_use", "")
+
+    allowed_raw  = frontmatter.get("allowed_tools", "")
+    allowed_tools: list[str] = []
+    if allowed_raw:
+        # Accept both [A, B] list syntax and plain "A, B" string.
+        allowed_raw = allowed_raw.strip("[]")
+        allowed_tools = [t.strip().strip("'\"") for t in allowed_raw.split(",") if t.strip()]
+
+    return Skill(
+        name=name,
+        description=description,
+        when_to_use=when_to_use,
+        allowed_tools=allowed_tools,
+        prompt=body,
+        source_path=os.path.abspath(path),
+    )
+
+
+def _collect_skill_files(path: str) -> list[str]:
+    """Return a list of .md file paths from *path* (file or directory)."""
+    path = os.path.abspath(path)
+    if os.path.isfile(path):
+        return [path] if path.endswith(".md") else []
+    if os.path.isdir(path):
+        return sorted(
+            os.path.join(path, f)
+            for f in os.listdir(path)
+            if f.endswith(".md") and os.path.isfile(os.path.join(path, f))
+        )
+    return []
 
 
 class ToolBase:
@@ -102,7 +194,18 @@ class ToolBase:
 
 
 class Engine(_Engine):
-    """openrein Engine with ToolBase registration support."""
+    """openrein Engine with ToolBase registration and Skill support."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ordered list of PATH strings added via skill_add().
+        self._skill_paths: list[str] = []
+        # name → Skill map (later PATH wins on collision).
+        self._skills: dict[str, Skill] = {}
+
+    # ------------------------------------------------------------------
+    # ToolBase registration
+    # ------------------------------------------------------------------
 
     def register_tool(self, tool_or_func=None, *, name=None, description=None, schema=None):
         """Register a tool.
@@ -130,5 +233,86 @@ class Engine(_Engine):
             if schema      is not None: kwargs["schema"]      = schema
             _Engine.register_tool(self, tool_or_func, **kwargs)
 
+    # ------------------------------------------------------------------
+    # Skill interface
+    # ------------------------------------------------------------------
 
-__all__ = ["Engine", "SubAgent", "Compact", "ToolBase", "default_tools"]
+    @property
+    def skills(self) -> list[str]:
+        """Return the list of registered skill PATH strings (files or directories)."""
+        return list(self._skill_paths)
+
+    def skill_add(self, path: str) -> None:
+        """Add a skill file or a directory of skill files.
+
+        When a name collision occurs the new skill (later PATH) wins.
+        Re-adding the same path is a no-op.
+        """
+        abs_path = os.path.abspath(path)
+        if abs_path not in self._skill_paths:
+            self._skill_paths.append(abs_path)
+        for fpath in _collect_skill_files(abs_path):
+            skill = _parse_skill(fpath)
+            self._skills[skill.name] = skill
+
+    def skill_remove(self, path: str) -> None:
+        """Remove a skill file or directory previously added with skill_add().
+
+        Skills whose source_path is under *path* are removed from the registry.
+        After removal, remaining paths are re-scanned so earlier definitions
+        of the same name are restored if available.
+        """
+        abs_path = os.path.abspath(path)
+        if abs_path in self._skill_paths:
+            self._skill_paths.remove(abs_path)
+        # Rebuild skill map from remaining paths to restore shadowed skills.
+        self._skills.clear()
+        for p in self._skill_paths:
+            for fpath in _collect_skill_files(p):
+                skill = _parse_skill(fpath)
+                self._skills[skill.name] = skill
+
+    def skill_list(self) -> list[Skill]:
+        """Return all registered Skill objects (sorted by name)."""
+        return sorted(self._skills.values(), key=lambda s: s.name)
+
+    def skill_prompt_listing(self) -> str:
+        """Return a text block suitable for injection into a system prompt.
+
+        Format::
+
+            Available skills:
+            - commit: stage and commit changes (use when: 사용자가 커밋 요청할 때)
+            - ...
+        """
+        skills = self.skill_list()
+        if not skills:
+            return ""
+        lines = ["Available skills:"]
+        for s in skills:
+            line = f"- {s.name}: {s.description}"
+            if s.when_to_use:
+                line += f" (use when: {s.when_to_use})"
+            lines.append(line)
+        return "\n".join(lines)
+
+    def skill_inject(self, name: str, args: str = "") -> None:
+        """Inject a skill's prompt as a user message.
+
+        Args:
+            name: Skill name (without .md extension).
+            args: Optional extra text appended after the skill prompt.
+
+        Raises:
+            KeyError: If *name* is not a registered skill.
+        """
+        if name not in self._skills:
+            raise KeyError(f"Skill not found: {name!r}")
+        skill = self._skills[name]
+        prompt = skill.prompt
+        if args:
+            prompt = f"{prompt}\n\n{args}"
+        self.add("user", prompt)
+
+
+__all__ = ["Engine", "SubAgent", "Compact", "ToolBase", "Skill", "default_tools"]
