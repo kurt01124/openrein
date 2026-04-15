@@ -333,6 +333,33 @@ python -m rein_code "Refactor the auth module to use JWT"
 > arising from use of the example. Anyone who uses this example in a commercial product
 > or service does so **entirely at their own risk and responsibility**.
 
+## Ecosystem
+
+**[openrein-contrib](https://github.com/kurt01124/openrein-contrib)** — community Skills and Tools for openrein.
+
+Install it alongside openrein to get a collection of ready-made prompt recipes and ToolBase implementations:
+
+```bash
+pip install openrein openrein-contrib
+```
+
+```python
+import openrein
+from openrein.contrib.tools import GitHubTool, SlackTool
+from openrein.contrib import SKILLS_DIR
+
+engine = openrein.Engine(system_prompt="You are a helpful assistant.")
+
+# Drop in all contrib skills
+engine.skill_add(SKILLS_DIR)
+
+# Register a contrib tool
+engine.register_tool(GitHubTool(token="..."))
+```
+
+contrib is a separate package that plugs into the `openrein.*` namespace — no rebuild of openrein required.  
+See the [openrein-contrib repository](https://github.com/kurt01124/openrein-contrib) for the full list of available Skills and Tools.
+
 ## License
 
 MIT
