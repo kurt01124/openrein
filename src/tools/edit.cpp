@@ -7,15 +7,15 @@ namespace openrein {
 
 std::string EditTool::description() const {
     return
-        "Performs exact string replacements in files.\n"
+        "Replaces an exact string in a file with new content.\n"
         "\n"
         "Usage:\n"
-        "- You must use your `Read` tool at least once in the conversation before editing. This tool will error if you attempt an edit without reading the file.\n"
-        "- When editing text from Read tool output, ensure you preserve the exact indentation (tabs/spaces) as it appears AFTER the line number prefix. The line number prefix format is: line number + tab. Everything after that is the actual file content to match. Never include any part of the line number prefix in the old_string or new_string.\n"
-        "- ALWAYS prefer editing existing files in the codebase. NEVER write new files unless explicitly required.\n"
-        "- Only use emojis if the user explicitly requests it. Avoid adding emojis to files unless asked.\n"
-        "- The edit will FAIL if `old_string` is not unique in the file. Either provide a larger string with more surrounding context to make it unique or use `replace_all` to change every instance of `old_string`.\n"
-        "- Use `replace_all` for replacing and renaming strings across the file. This parameter is useful if you want to rename a variable for instance.";
+        "- Read the file with the Read tool before editing — this tool errors if the file has not been read\n"
+        "- Copy old_string exactly from the Read output. The line-number prefix (number + tab) is not part of the file — do not include it in old_string or new_string\n"
+        "- Preserve the original indentation (tabs/spaces) precisely; any mismatch will cause the edit to fail\n"
+        "- Prefer this tool over Write when changing part of an existing file\n"
+        "- old_string must be unique in the file; include more surrounding context if needed, or set replace_all=true to update every occurrence\n"
+        "- Use replace_all=true when renaming a symbol or repeated value throughout the file";
 }
 
 json EditTool::input_schema() const {

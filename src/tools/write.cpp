@@ -7,8 +7,14 @@ namespace openrein {
 
 std::string WriteTool::description() const {
     return
-        "Creates or overwrites a file. Intermediate directories are created automatically.\n"
-        "If the file already exists it is completely overwritten.";
+        "Writes content to a file, creating it or replacing it entirely.\n"
+        "\n"
+        "Usage:\n"
+        "- If the file already exists, read it first with the Read tool before writing\n"
+        "- Prefer the Edit tool for partial changes to an existing file — Write replaces everything\n"
+        "- Use only to create a new file or when a complete rewrite is genuinely necessary\n"
+        "- Parent directories are created automatically\n"
+        "- Do not create documentation or README files unless the user explicitly requests it";
 }
 
 json WriteTool::input_schema() const {

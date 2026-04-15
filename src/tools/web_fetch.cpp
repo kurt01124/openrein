@@ -9,8 +9,14 @@ namespace openrein {
 
 std::string WebFetchTool::description() const {
     return
-        "Fetches the contents of a web page from a URL and returns it as text.\n"
-        "HTML is converted to plain text by stripping tags. Timeout: 30 seconds.";
+        "Fetches a URL and returns its content as plain text.\n"
+        "\n"
+        "Usage:\n"
+        "- HTML tags are stripped; the result is unformatted plain text\n"
+        "- Request timeout is 30 seconds\n"
+        "- Use max_length to cap the returned text (default 20000 characters)\n"
+        "- Suitable for documentation pages, plain-text files, and simple web content\n"
+        "- Not designed for large downloads or binary content";
 }
 
 json WebFetchTool::input_schema() const {

@@ -202,16 +202,16 @@ static std::string search_file_with_context(
 
 std::string GrepTool::description() const {
     return
-        "A powerful search tool built on ripgrep\n"
+        "Searches file contents with regular expressions and returns matches.\n"
         "\n"
-        "  Usage:\n"
-        "  - ALWAYS use Grep for search tasks. NEVER invoke `grep` or `rg` as a Bash command. The Grep tool has been optimized for correct permissions and access.\n"
-        "  - Supports full regex syntax (e.g., \"log.*Error\", \"function\\s+\\w+\")\n"
-        "  - Filter files with glob parameter (e.g., \"*.js\", \"**/*.tsx\") or type parameter (e.g., \"js\", \"py\", \"rust\")\n"
-        "  - Output modes: \"content\" shows matching lines, \"files_with_matches\" shows only file paths (default), \"count\" shows match counts\n"
-        "  - Use Agent tool for open-ended searches requiring multiple rounds\n"
-        "  - Pattern syntax: Uses ripgrep (not grep) - literal braces need escaping (use `interface\\{\\}` to find `interface{}` in Go code)\n"
-        "  - Multiline matching: By default patterns match within single lines only. For cross-line patterns like `struct \\{[\\s\\S]*?field`, use `multiline: true`\n";
+        "Usage:\n"
+        "- Use this tool for all content searches — do not run grep or rg through the Bash tool\n"
+        "- Supports full regex syntax (e.g., \"log.*Error\", \"def\\s+\\w+\")\n"
+        "- Narrow the search scope with glob (e.g., \"*.py\") or type (e.g., \"py\", \"js\", \"rust\") filters\n"
+        "- Output modes: \"files_with_matches\" returns file paths only (default), \"content\" returns matching lines with optional context, \"count\" returns per-file match counts\n"
+        "- Escape literal braces in patterns: use interface\\{\\} to match interface{} in Go code\n"
+        "- Patterns match within a single line by default; multiline mode is not supported\n"
+        "- Use head_limit and offset to page through large result sets\n";
 }
 
 json GrepTool::input_schema() const {

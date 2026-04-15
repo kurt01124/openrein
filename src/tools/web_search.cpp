@@ -9,8 +9,12 @@ namespace openrein {
 
 std::string WebSearchTool::description() const {
     return
-        "Searches the web and returns a list of results (title/URL/summary).\n"
-        "Uses the Brave Search API if the BRAVE_API_KEY environment variable is set, otherwise falls back to DuckDuckGo.";
+        "Searches the web and returns a ranked list of results, each with a title, URL, and short summary.\n"
+        "\n"
+        "Usage:\n"
+        "- Use for current events, recent releases, or topics beyond the model's training cutoff\n"
+        "- Set the BRAVE_API_KEY environment variable to use the Brave Search API; falls back to DuckDuckGo otherwise\n"
+        "- Adjust num_results to control how many results are returned (default 10)";
 }
 
 json WebSearchTool::input_schema() const {
