@@ -57,11 +57,13 @@ std::string glob_to_regex_str(const std::string& glob) {
 
 std::string GlobTool::description() const {
     return
-        "- Fast file pattern matching tool that works with any codebase size\n"
-        "- Supports glob patterns like \"**/*.js\" or \"src/**/*.ts\"\n"
-        "- Returns matching file paths sorted by modification time\n"
-        "- Use this tool when you need to find files by name patterns\n"
-        "- When you are doing an open ended search that may require multiple rounds of globbing and grepping, use the Agent tool instead";
+        "Finds files by name pattern and returns matching paths sorted by modification time.\n"
+        "\n"
+        "Usage:\n"
+        "- Accepts standard glob syntax: ** matches across directory levels, * matches within one level\n"
+        "- Examples: \"**/*.py\", \"src/**/*.ts\", \"test_*.cpp\"\n"
+        "- Use when you know roughly what a file is named but not where it lives\n"
+        "- To search file contents rather than names, use the Grep tool instead";
 }
 
 json GlobTool::input_schema() const {

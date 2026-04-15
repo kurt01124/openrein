@@ -9,8 +9,14 @@ namespace openrein {
 
 std::string ReadTool::description() const {
     return
-        "Reads a file from the local filesystem and returns it with line numbers.\n"
-        "Large files are automatically truncated (default 2000 lines). Partial reading via offset/limit is supported.";
+        "Reads a file from the local filesystem and returns its contents with line numbers.\n"
+        "\n"
+        "Usage:\n"
+        "- Provide an absolute path where possible\n"
+        "- Output format: each line is prefixed with its 1-based line number followed by a tab\n"
+        "- Reads up to 2000 lines by default; use offset and limit for partial reads of large files\n"
+        "- To list a directory, use the Bash tool with ls instead — this tool reads files only\n"
+        "- Returns an error if the file cannot be opened";
 }
 
 json ReadTool::input_schema() const {

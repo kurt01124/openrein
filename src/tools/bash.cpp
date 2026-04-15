@@ -214,9 +214,23 @@ namespace openrein {
 
 std::string BashTool::description() const {
     return
-        "Executes a shell command and returns combined stdout+stderr.\n"
-        "Windows: runs via PowerShell (temporary .ps1) — supports Unix aliases like ls/cat, UTF-8 output.\n"
-        "Unix: runs via /bin/sh -c (select-based timeout, SIGKILL termination).";
+        "Executes a shell command and returns the combined output (stdout + stderr).\n"
+        "\n"
+        "Platform notes:\n"
+        "- Windows: runs through PowerShell; Unix-style aliases (ls, cat, etc.) and UTF-8 output are supported\n"
+        "- Unix/macOS: runs through /bin/sh with select-based I/O and SIGKILL on timeout\n"
+        "\n"
+        "Usage:\n"
+        "- Prefer dedicated tools for common operations instead of shell equivalents:\n"
+        "    file search    -> Glob  (not find or ls)\n"
+        "    content search -> Grep  (not grep or rg)\n"
+        "    reading files  -> Read  (not cat, head, tail)\n"
+        "    editing files  -> Edit  (not sed, awk)\n"
+        "    writing files  -> Write (not echo redirection)\n"
+        "- Quote paths that contain spaces: e.g., cd \"my dir/file.txt\"\n"
+        "- Chain dependent commands with &&; issue independent commands as separate Bash calls\n"
+        "- Do not separate multiple commands with newlines inside a single call\n"
+        "- Default timeout: 120 seconds. Maximum: 600 seconds (10 minutes)";
 }
 
 json BashTool::input_schema() const {
