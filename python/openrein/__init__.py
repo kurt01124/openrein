@@ -55,6 +55,9 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pkgutil import extend_path
+
+__path__ = extend_path(__path__, __name__)
 
 from ._openrein import (  # noqa: F401
     Engine as _Engine,
