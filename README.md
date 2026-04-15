@@ -12,6 +12,7 @@ openrein handles the repetitive parts — message state, tool dispatch, sub-agen
 - **8 built-in tools** — Read, Write, Edit, Bash, Grep, Glob, WebFetch, WebSearch
 - **MCP support** — connect stdio or HTTP MCP servers via `add_mcp_server()`
 - **ToolBase** — pure Python base class for writing custom tools without a C++ build
+- **Skills** — plug in reusable prompt recipes from Markdown files at runtime
 
 ## Requirements
 
@@ -178,6 +179,74 @@ Or use the convenience method on Engine:
 
 ```python
 engine.maybe_compact(my_model_fn, threshold=80000)
+```
+
+## Skills
+
+Skills are reusable prompt recipes stored as Markdown files. Load a file or an entire directory at runtime — no rebuild required.
+
+### Skill file format
+
+```markdown
+---
+description: stage and commit changes
+when_to_use: when the user asks to commit
+allowed_tools: [Read, Bash]
+---
+
+Stage all modified files and create a commit with a concise message.
+```
+
+| Frontmatter key | Required | Description |
+|-----------------|----------|-------------|
+| `description`   | yes | One-line summary shown in the skill listing |
+| `when_to_use`   | no  | Hint for the LLM on when to trigger this skill |
+| `allowed_tools` | no  | Comma-separated or `[bracket]` list of tool names |
+
+The skill **name** is the filename without the `.md` extension.
+
+### Usage
+
+```python
+import openrein
+
+engine = openrein.Engine(system_prompt="You are a helpful assistant.")
+
+# Load a directory of .md skill files
+engine.skill_add("skills/")
+
+# Or load a single file
+engine.skill_add("skills/commit.md")
+
+# Append the skill listing to your system prompt
+system = engine.system_prompt + "\n\n" + engine.skill_prompt_listing()
+
+# Inspect registered skills
+for skill in engine.skill_list():
+    print(skill.name, "—", skill.description)
+
+# Inject a skill's prompt as a user message before the model call
+engine.skill_inject("commit")
+
+# Pass extra context along with the skill prompt
+engine.skill_inject("commit", "Push to the main branch afterwards.")
+```
+
+`skill_prompt_listing()` produces text like:
+
+```
+Available skills:
+- commit: stage and commit changes (use when: when the user asks to commit)
+- review: review the current diff for issues (use when: when the user asks for a code review)
+```
+
+### Removing skills
+
+```python
+# Remove a previously added path (file or directory).
+# If another loaded path contains a skill of the same name, that earlier
+# definition is automatically restored.
+engine.skill_remove("skills/commit.md")
 ```
 
 ## Example: rein-code
