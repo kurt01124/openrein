@@ -318,21 +318,6 @@ python -m rein_code "Refactor the auth module to use JWT"
 | `REIN_MAIN_MODEL` | `glm-5-turbo` | Main agent model |
 | `REIN_SUB_MODEL` | `glm-4.5-air` | Sub-agent model |
 
----
-
-> **Legal notice — rein-code example**
->
-> The system prompt used in `example/` is derived from prompts that have been publicly
-> disclosed and widely circulated. It is included here **solely for educational and
-> illustrative purposes** to demonstrate how openrein can be used to build a coding
-> agent.
->
-> This example is provided **as-is**, without warranty of any kind. The author makes
-> **no representations** regarding the intellectual property status of the prompt text,
-> and **accepts no liability** for any commercial use, derivative works, or legal claims
-> arising from use of the example. Anyone who uses this example in a commercial product
-> or service does so **entirely at their own risk and responsibility**.
-
 ## Ecosystem
 
 **[openrein-contrib](https://github.com/kurt01124/openrein-contrib)** — community Skills and Tools for openrein.
