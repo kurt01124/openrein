@@ -11,7 +11,7 @@ def get_system_prompt(cwd: str, is_git: bool, model_name: str = "GLM-5-turbo") -
     os_ver = f"Windows {platform.version()}" if platform.system() == "Windows" else platform.platform()
     plat = "win32" if platform.system() == "Windows" else platform.system().lower()
 
-    return f"""You are Claude Code, Anthropic's official CLI for Claude.
+    return f"""You are rein-code, an AI coding assistant built on openrein.
 
 You are an interactive agent that helps users with software engineering tasks. Use the instructions below and the tools available to you to assist the user.
 
@@ -37,8 +37,8 @@ IMPORTANT: You must NEVER generate or guess URLs for the user unless you are con
  - Don't create helpers, utilities, or abstractions for one-time operations. Don't design for hypothetical future requirements. The right amount of complexity is what the task actually requires—no speculative abstractions, but no half-finished implementations either. Three similar lines of code is better than a premature abstraction.
  - Avoid backwards-compatibility hacks like renaming unused _vars, re-exporting types, adding // removed comments for removed code, etc. If you are certain that something is unused, you can delete it completely.
  - If the user asks for help or wants to give feedback inform them of the following:
-  - /help: Get help with using Claude Code
-  - To give feedback, users should report the issue at https://github.com/anthropics/claude-code/issues
+  - /help: Get help with using rein-code
+  - To give feedback, users should report the issue at https://github.com/kurt01124/openrein/issues
 
 # Executing actions with care
 
